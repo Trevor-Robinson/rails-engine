@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 describe "Merchant API" do
-  it "sends a list of books" do
-    create_list(:merchant_with_items, 20)
+  it "sends a list of merchants" do
+    create_list(:merchant_with_items, 50)
 
     get '/api/v1/merchants'
 
@@ -23,7 +23,7 @@ describe "Merchant API" do
     end
   end
 
-  it "can get one merchant by its id" do
+  it "sends one merchant by its id" do
 
     id = create(:merchant).id
 
@@ -40,6 +40,32 @@ describe "Merchant API" do
     expect(merchant["data"]["attributes"]).to have_key("name")
     expect(merchant["data"]["attributes"]["name"]).to be_an(String)
   end
+  it "returns subset of merchants based on pagination" do
+    create_list(:merchant_with_items, 30)
 
+    get '/api/v1/merchants?page=1'
+
+    merchant = JSON.parse(response.body)
+    expect(response).to be_successful
+    expect(merchant["data"].count).to eq(20)
+
+  end
+
+  it "returns other pages of merchants" do
+
+    create_list(:merchant_with_items, 30)
+
+    get '/api/v1/merchants?page=2'
+
+    merchant = JSON.parse(response.body)
+    expect(response).to be_successful
+    expect(merchant["data"].count).to eq(10)
+  end
+
+  it "can return items for a merchant" do
+    create_list(:merchant_with_items, 3)
+
+    binding.pry
+  end
 
 end
